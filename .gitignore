@@ -1,0 +1,6 @@
+*.pyc
+*/*.pyc
+*/*/*.pyc
+symvarsub/numtransform/tests/tmp*/
+symvarsub/numtransform/prebuilt/*
+
