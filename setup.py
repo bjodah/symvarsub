@@ -18,7 +18,10 @@ def main():
 
 
     # numtransform
-    run_sub_setup('./symodesys/numtransform/', numtransform_main, logger)
+    cwd = os.path.join(os.path.abspath(
+        os.path.dirname(__file__)),
+                       './symvarsub/numtransform/')
+    run_sub_setup(cwd, numtransform_main, logger)
 
 
 if __name__ == '__main__':
