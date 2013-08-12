@@ -12,7 +12,7 @@ from collections import defaultdict
 import sympy
 import numpy as np
 from pycompilation import pyx2obj, FortranCompilerRunner, import_, HasMetaData
-from pycompilation.codeexport import F90_Code
+from pycompilation.codeexport import F90_Code, DummyGroup
 
 
 
@@ -60,9 +60,8 @@ class NumTransformer(F90_Code, HasMetaData):
                 try:
                     self._binary_mod = import_(self.binary_path)
                 except ImportError:
-                    print 'Try to remove "{}" in "{}"'.format(
-                        self.metadata_filename, self._tempdir)
-                    raise
+                    raise ImportError('Failed to import module, try to remove "{}" in "{}"'.format(
+                        self.metadata_filename, self._tempdir))
             else:
                 raise ValueError("Hash mismatch (current, old): {}, {}".format(
                     hash(self), hash_))
@@ -102,6 +101,7 @@ class NumTransformer(F90_Code, HasMetaData):
                 return candidate
             else:
                 return make_dummy(candidate.name+'p', not_in)
+
         # First let's determine the used keys
         used_keys = []
         used_keys_dummies = []
@@ -125,15 +125,19 @@ class NumTransformer(F90_Code, HasMetaData):
                     pass
                 else:
                     raise NotImplementedError
+
         for n in sorted(derivs.keys())[::-1]:
             # Substitutions of symbolified derivatives
             # need to be made for the highest degrees of
             # derivatives first
             for deriv, symb in derivs[n].items():
-                new_exprs = []
-                for expr in exprs:
-                    new_exprs.append(expr.subs({deriv: symb}))
-                exprs = new_exprs
+                exprs = [expr.subs({deriv: symb}) for expr in exprs]
+
+        # Ok, so all Derivative(...) instances in exprs should have
+        # been dummyfied - iff user provided all corresponding Derivative(...)
+        # as inputs, let's check that now and stop them if they missed any:
+        if any_expr_has(sympy.Derivative): raise ValueError(
+                'Did you forget to provide all derivatives as input?')
 
         # Now we are almost there..
         # But e.g. z(t) has included t into used_keys
@@ -154,19 +158,23 @@ class NumTransformer(F90_Code, HasMetaData):
         """
         dummies = dict(zip(self._robust_inp_symbs, self._robust_inp_dummies))
         idxs = [self._inp.index(symb) for symb in self._robust_inp_symbs]
-        ##### make sure args[i] 1 dimensional: .reshape(len(args[i]))
+        # make sure args[i] 1 dimensional: .reshape(len(args[i]))
         inp = np.vstack([args[i] for i in idxs]).transpose()
         return self._binary_mod.transform(inp, len(self._exprs))
 
 
     def variables(self):
-        args = [str(v) for v in self._robust_inp_dummies]
-        cses, exprs_in_cse = sympy.cse(
-            self._robust_exprs, symbols=sympy.numbered_symbols('cse'))
-        return {'ARGS': args,
-                'CSES': cses,
-                'EXPRS_IN_CSE': [self.wcode(x) for x in exprs_in_cse],
-                'N_EXPRS': len(self._exprs)}
+        dummy_groups = (
+            DummyGroup('argdummies', self._robust_inp_dummies, 'input', 1, 1),
+            )
+
+        cse_defs_code, exprs_in_cse_code = self.get_cse_code(
+            self._robust_exprs, 'cse', dummy_groups)
+
+        return {'CSES': cse_defs_code,
+                'EXPRS_IN_CSE': exprs_in_cse_code,
+                'N_EXPRS': len(self._exprs),
+                'N_ARGS': len(self._robust_inp_dummies)}
 
     def _write_code(self):
         # first we need to export the template in this module

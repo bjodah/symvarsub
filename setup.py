@@ -2,7 +2,7 @@ import os
 
 import logging
 
-from pycompilation.helpers import run_sub_setup
+from pycompilation.util import run_sub_setup
 
 from symvarsub.numtransform._setup_numtransform import main as numtransform_main
 

@@ -15,7 +15,7 @@ clean:
 
 .PHONY: clean
 
-test: transform.f90 transform_test.f90
+test: transform.f90 _test_transform.f90
 	gfortran -o $@ $^
 
 transform_wrapper.c: transform_wrapper.pyx

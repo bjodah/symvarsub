@@ -1,10 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function, division, absolute_import
+
+
 import sympy
+from sympy import exp, Derivative
 import numpy as np
 
 from symvarsub import NumTransformer
+from symvarsub.utilities import MaybeRealFunction
 
 # Setup logging
 import logging
@@ -16,8 +21,6 @@ def test_NumTransformer(tempdir=None, logger=None):
                     save_temp=True, logger=logger)
     x_, y_ = np.linspace(0,10,10), np.linspace(10,20,10)
     out = t(x_, y_)
-    print out
-    print np.vstack(((x_+1)**2, (x_+1)**3-y_)).transpose()
     assert np.allclose(out, np.vstack(((x_+1)**2, (x_+1)**3-y_)).transpose())
 
 def test_NumTransformer__complex_argument_names(tempdir=None, logger=None):
@@ -53,6 +56,51 @@ def test_NumTransformer__complex_argument_names(tempdir=None, logger=None):
     assert np.allclose(num_dydt, exact_dydt)
 
 
+def test_NumTransformer__complex_argument_names2(tempdir=None, logger=None):
+    # y,t -> f,g
+    # f = exp(y(t))
+    # g = exp(y(t))*Derivative(y(t), t)
+
+    n=5
+    num_y = np.linspace(5.0, 7.0, n)
+    num_dydt = np.linspace(0.0, 3.0, n)
+
+    exact_f = np.exp(num_y)
+    exact_g = np.exp(num_y)*num_dydt
+
+    out = ['f', 'g']
+    exact = {'f': exact_f, 'g': exact_g}
+
+    y = sympy.Function('y')
+    t = sympy.Symbol('t')
+    dydt = y(t).diff(t)
+
+    exprs = [sympy.exp(y(t)), sympy.exp(y(t))*y(t).diff(t)]
+    inp = [y(t), dydt]
+    num_data = {y(t): num_y, dydt: num_dydt}
+    tfmr = NumTransformer(exprs, inp, tempdir=tempdir,
+                          save_temp=True, logger=logger)
+    result = tfmr(*[num_data[k] for k in inp])
+
+    for i, s in enumerate(out):
+        assert np.allclose(result[:,i], exact[s])
+
+
+def test_NumTransformer__write_code(tempdir=None, logger=None):
+    t = sympy.Symbol('t', real=True)
+    lny0, lny1, lny2, lny3, lny4 = [MaybeRealFunction(s, [t], real=True) for s \
+                                    in 'lny0 lny1 lny2 lny3 lny4'.split()]
+
+    exprs = [
+        exp(lny0), exp(lny0)*Derivative(lny0, t),
+        exp(lny1), exp(lny1)*Derivative(lny1, t),
+    ]
+    args = [Derivative(lny1, t), lny1, Derivative(lny0, t), lny0]
+    tfmr = NumTransformer(exprs, args, tempdir=tempdir, save_temp=True)
+    # Compilation might fail: (that's what we are testing)
+    output = tfmr(*([np.ones(3)]*len(args)))
+
+
 if __name__ == '__main__':
     # When this test file is run from the command line
     # we print some extra info a logger and save the generated
@@ -60,4 +108,6 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger(__name__)
     test_NumTransformer__complex_argument_names('./tmp1/', logger=logger)
-    test_NumTransformer('./tmp2/', logger=logger)
+    test_NumTransformer__complex_argument_names2('./tmp2/', logger=logger)
+    test_NumTransformer('./tmp3/', logger=logger)
+    test_NumTransformer__write_code(tempdir='./tmp4/', logger=logger)
