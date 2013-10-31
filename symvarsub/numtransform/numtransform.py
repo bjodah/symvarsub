@@ -25,18 +25,18 @@ class NumTransformer(F90_Code, HasMetaData):
     shape: (len(exprs), len(inp))
     """
 
-    _templates = ['transform_template.f90']
+    templates = ['transform_template.f90']
 
-    _copy_files = ['prebuilt/transform_wrapper.o',
+    copy_files = ['prebuilt/transform_wrapper.o',
                    'prebuilt/'+FortranCompilerRunner.metadata_filename, # <--- Make sure we compile with same compiler
                ]
 
-    _source_files = ['transform.f90']
+    source_files = ['transform.f90']
 
-    _obj_files = ['transform.o',
+    obj_files = ['transform.o',
                   'transform_wrapper.o',]
 
-    _so_file = 'transform_wrapper.so'
+    so_file = 'transform_wrapper.so'
 
     def __init__(self, exprs, inp, **kwargs):
         self._exprs = exprs
@@ -71,8 +71,8 @@ class NumTransformer(F90_Code, HasMetaData):
 
     def __hash__(self):
         """
-        Due to shortcomings of pythons import mechanisms it is not
-        (easily?) possible to reimport a .so file from the _same_
+        Due to shortcomings of pythons import mechanisms (or *nix OSes?)
+        it is not (easily?) possible to reimport a .so file from the _same_
         path if it has been updated. The work-around chosen here
         is to generate a unique _so_file name for the instance.
 
@@ -175,7 +175,3 @@ class NumTransformer(F90_Code, HasMetaData):
                 'EXPRS_IN_CSE': exprs_in_cse_code,
                 'N_EXPRS': len(self._exprs),
                 'N_ARGS': len(self._robust_inp_dummies)}
-
-    def _write_code(self):
-        # first we need to export the template in this module
-        super(NumTransformer, self)._write_code()
