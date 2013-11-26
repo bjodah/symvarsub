@@ -15,6 +15,15 @@ from pycompilation import pyx2obj, FortranCompilerRunner, import_, HasMetaData
 from pycompilation.codeexport import F90_Code, DummyGroup
 
 
+def lambdify(args, expr):
+    """
+    Mimics from sympy.utilities.lambdify.lambdify
+    but allows to use numpy arrays
+    """
+    if isinstance(args, sympy.Symbol):
+        args = [args]
+    return NumTransformer([expr], args)
+
 
 class NumTransformer(F90_Code, HasMetaData):
     """
@@ -54,6 +63,7 @@ class NumTransformer(F90_Code, HasMetaData):
         # (if it has import of the .so file will fail)
         # due to caching of python (if imported previously
         # in this running Python interpreter session)
+
         try:
             hash_ = self.get_from_metadata_file(self._tempdir, 'hash')
             if hash_ == hash(self):
@@ -69,16 +79,18 @@ class NumTransformer(F90_Code, HasMetaData):
             self._binary_mod = self.compile_and_import_binary()
             self.save_to_metadata_file(self._tempdir, 'hash', hash(self))
 
+
     def __hash__(self):
         """
         Due to shortcomings of pythons import mechanisms (or *nix OSes?)
         it is not (easily?) possible to reimport a .so file from the _same_
         path if it has been updated. The work-around chosen here
-        is to generate a unique _so_file name for the instance.
+        is to generate a unique `so_file` name for the instance.
 
         Note that we are not guaranteeing absence of hash collisions...
         """
         return hash(tuple(self._exprs)+tuple(self._inp))
+
 
     def robustify(self, exprs, inp):
         dummies = []
@@ -156,11 +168,20 @@ class NumTransformer(F90_Code, HasMetaData):
         """
         Give arrays in as arguments in same order as `inp` at init.
         """
+        if self._binary_mod.__file__ != self.binary_path:
+            # Avoid singleton behaviour. (Python changes binary path
+            # inplace without changing id of Python object)
+            self._binary_mod = import_(self.binary_path)
+        if self._binary_mod.__file__ != self.binary_path:
+            raise RuntimeError
         dummies = dict(zip(self._robust_inp_symbs, self._robust_inp_dummies))
         idxs = [self._inp.index(symb) for symb in self._robust_inp_symbs]
         # make sure args[i] 1 dimensional: .reshape(len(args[i]))
         inp = np.vstack([args[i] for i in idxs]).transpose()
-        return self._binary_mod.transform(inp, len(self._exprs))
+        ret = self._binary_mod.transform(inp, len(self._exprs))
+        if len(self._exprs) == 1 and len(args) == 1:
+            if isinstance(args[0], float): return ret[0][0]
+        return ret
 
 
     def variables(self):
