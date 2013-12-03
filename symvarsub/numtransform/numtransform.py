@@ -12,7 +12,7 @@ from collections import defaultdict
 import sympy
 import numpy as np
 from pycompilation import pyx2obj, FortranCompilerRunner, import_, HasMetaData
-from pycompilation.codeexport import F90_Code, DummyGroup
+from pycompilation.codeexport import F90_Code, DummyGroup, ArrayifyGroup
 
 
 def lambdify(args, expr):
@@ -186,11 +186,14 @@ class NumTransformer(F90_Code, HasMetaData):
 
     def variables(self):
         dummy_groups = (
-            DummyGroup('argdummies', self._robust_inp_dummies, 'input', 1, 1),
+            DummyGroup('argdummies', self._robust_inp_dummies),
             )
+        arrayify_groups = (
+            ArrayifyGroup('argdummies', 'input', 1, 1),
+        )
 
         cse_defs_code, exprs_in_cse_code = self.get_cse_code(
-            self._robust_exprs, 'cse', dummy_groups)
+            self._robust_exprs, 'cse', dummy_groups, arrayify_groups)
 
         return {'CSES': cse_defs_code,
                 'EXPRS_IN_CSE': exprs_in_cse_code,
