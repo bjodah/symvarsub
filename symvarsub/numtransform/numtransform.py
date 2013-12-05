@@ -47,6 +47,8 @@ class NumTransformer(F90_Code, HasMetaData):
 
     so_file = 'transform_wrapper.so'
 
+    compile_kwargs = {'options': ['pic', 'warn', 'fast']}
+
     def __init__(self, exprs, inp, **kwargs):
         self._exprs = exprs
         self._inp = inp

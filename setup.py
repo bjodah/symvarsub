@@ -16,12 +16,12 @@ def main():
     logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger(__name__)
 
-
     # numtransform
     cwd = os.path.join(os.path.abspath(
         os.path.dirname(__file__)),
                        './symvarsub/numtransform/')
-    run_sub_setup(cwd, numtransform_main, logger)
+    run_sub_setup(numtransform_main, 'prebuilt/',
+                  cwd=cwd, logger=logger)
 
 
 if __name__ == '__main__':
