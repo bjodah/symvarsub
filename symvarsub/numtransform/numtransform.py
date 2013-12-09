@@ -11,8 +11,9 @@ from collections import defaultdict
 
 import sympy
 import numpy as np
-from pycompilation import pyx2obj, FortranCompilerRunner, import_, HasMetaData
+from pycompilation import pyx2obj, FortranCompilerRunner, import_, HasMetaData, FileNotFoundError
 from pycompilation.codeexport import F90_Code, DummyGroup, ArrayifyGroup
+
 
 
 def lambdify(args, expr):
@@ -77,7 +78,7 @@ class NumTransformer(F90_Code, HasMetaData):
             else:
                 raise ValueError("Hash mismatch (current, old): {}, {}".format(
                     hash(self), hash_))
-        except IOError:
+        except FileNotFoundError:
             self._binary_mod = self.compile_and_import_binary()
             self.save_to_metadata_file(self._tempdir, 'hash', hash(self))
 
