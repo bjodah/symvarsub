@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 """
@@ -37,14 +36,17 @@ class NumTransformer(F90_Code, HasMetaData):
 
     templates = ['transform_template.f90']
 
-    copy_files = ['prebuilt/transform_wrapper.o',
-                   'prebuilt/'+FortranCompilerRunner.metadata_filename, # <--- Make sure we compile with same compiler
-               ]
+    copy_files = [
+        'prebuilt/transform_wrapper.o',
+        'prebuilt/'+FortranCompilerRunner.metadata_filename, # <- Ensure we compile with same compiler
+    ]
 
     source_files = ['transform.f90']
 
-    obj_files = ['transform.o',
-                  'transform_wrapper.o',]
+    obj_files = [
+        'transform.o',
+        'transform_wrapper.o',
+    ]
 
     so_file = 'transform_wrapper.so'
 

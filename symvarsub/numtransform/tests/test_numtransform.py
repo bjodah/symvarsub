@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function, division, absolute_import
+from __future__ import division, absolute_import
 
 
 import sympy
@@ -11,8 +11,6 @@ import numpy as np
 from symvarsub import NumTransformer
 from symvarsub.utilities import MaybeRealFunction
 
-# Setup logging
-import logging
 
 
 def test_NumTransformer(tempdir=None, logger=None):
@@ -46,7 +44,7 @@ def test_NumTransformer__complex_argument_names(tempdir=None, logger=None):
     exprs = [y_in_z, dydt_in_z]
     inp = [t, z(t), z(t).diff(t)]
     tfmr = NumTransformer(exprs, inp, tempdir=tempdir,
-                       save_temp=True, logger=logger)
+                          save_temp=True, logger=logger)
     result = tfmr(*[z_data[k] for k in inp])
 
     num_y = result[:,0]
@@ -103,8 +101,10 @@ def test_NumTransformer__write_code(tempdir=None, logger=None):
 
 if __name__ == '__main__':
     # When this test file is run from the command line
-    # we print some extra info a logger and save the generated
-    # code in the output directories tmp$N
+    # we print some extra info using a logger and save the generated
+    # code in the output directories tmp${N}
+
+    import logging
     logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger(__name__)
     test_NumTransformer__complex_argument_names('./tmp1/', logger=logger)

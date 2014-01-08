@@ -1,28 +1,49 @@
-import os
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-import logging
+import sys
+from distutils.core import setup
 
-from pycompilation.util import run_sub_setup
+name_ = 'symvarsub'
 
-from symvarsub.numtransform._setup_numtransform import main as numtransform_main
+version_ = '0.0.1'
 
+if '--help'in sys.argv[1:] or sys.argv[1] in (
+        '--help-commands', 'egg_info', 'clean', '--version'):
+    cmdclass_ = {}
+    ext_modules_ = []
+else:
+    from pycompilation.dist import clever_build_ext
+    from pycompilation.dist import CleverExtension
+    import symvarsub.numtransform._setup_numtransform
 
-def main():
-    """
-    Precompile some sources to object files
-    and store in `prebuilt/` directories for
-    speeding up meta-programming compilations.
-    """
-    logging.basicConfig(level=logging.DEBUG)
-    logger = logging.getLogger(__name__)
+    cmdclass_ = {'build_ext': clever_build_ext}
+    ext_modules_ = [
+        CleverExtension(
+            name_+'.numtransform.transform_wrapper',
+            [],
+            copy_files = ['symvarsub/numtransform/transform_wrapper.pyx'],
+            dist_files = [('symvarsub/numtransform/transform_template.f90', None)],
+            build_callbacks = [
+                (
+                    symvarsub.numtransform._setup_numtransform.prebuild,
+                    ('symvarsub/numtransform/transform_wrapper.pyx',), {}
+                )
+            ],
+            link_ext=False,
+        )
+    ]
 
-    # numtransform
-    cwd = os.path.join(os.path.abspath(
-        os.path.dirname(__file__)),
-                       './symvarsub/numtransform/')
-    run_sub_setup(numtransform_main, 'prebuilt/',
-                  cwd=cwd, logger=logger)
-
-
-if __name__ == '__main__':
-    main()
+setup(
+    name=name_,
+    version=version_,
+    author='Björn Dahlgren',
+    author_email='bjodah@DELETEMEgmail.com',
+    description='Convenience functions for use with sympy.',
+    license = "BSD",
+    url='https://github.com/bjodah/'+name_,
+    download_url='https://github.com/bjodah/'+name_+'/archive/v'+version_+'.tar.gz',
+    packages=['symvarsub', 'symvarsub.numtransform'],
+    ext_modules=ext_modules_,
+    cmdclass = cmdclass_
+)

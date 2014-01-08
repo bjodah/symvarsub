@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import sympy
 
 def MaybeRealFunction(key, args, real=None):
