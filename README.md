@@ -6,8 +6,10 @@ symvarsub collects routines useful for performing variable subsitutions in colle
 Installation
 ------------
 E.g. do:
-pip install --user -r http://raw.github.com/bjodah/symvarsub/master/requirements.txt
-pip install --user http://github.com/bjodah/symvarsub/archive/v0.0.3.tar.gz
+
+    pip install --user --upgrade -r http://raw.github.com/bjodah/symvarsub/master/requirements.txt
+    pip install --user --upgrade http://github.com/bjodah/symvarsub/archive/v0.0.3.tar.gz
+
 (modify to your needs)
 
 Related projects
