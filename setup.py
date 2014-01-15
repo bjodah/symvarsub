@@ -2,11 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import symvarsub
+
 from distutils.core import setup
 
 name_ = 'symvarsub'
 
-version_ = '0.0.3'
+version_ = '0.0.4'
 
 if '--help'in sys.argv[1:] or sys.argv[1] in (
         '--help-commands', 'egg_info', 'clean', '--version'):
