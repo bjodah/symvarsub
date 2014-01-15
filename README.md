@@ -3,10 +3,16 @@ symvarsub
 
 symvarsub collects routines useful for performing variable subsitutions in collections of SymPy expressions
 
+Installation
+------------
+E.g. do:
+pip install --user -r http://raw.github.com/bjodah/symvarsub/master/requirements.txt
+pip install --user http://github.com/bjodah/symvarsub/archive/v0.0.3.tar.gz
+(modify to your needs)
 
-TODO
-----
-* Write an inverse solver based on newton iterations. (templated)
+Related projects
+----------------
+* [fastinverse](http://github.com/bjodah/fastinverse) generating C code for fast calculation of inverses (table lookup -> polynomial interpolation -> newton refinement)
 
 ## License
 Open Soucrce. Released under the very permissive simplified (2-clause) BSD license. See LICENCE.tx for further details.
