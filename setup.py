@@ -8,7 +8,7 @@ from distutils.core import setup
 
 name_ = 'symvarsub'
 
-version_ = '0.0.4'
+version_ = '0.0.5'
 
 if '--help'in sys.argv[1:] or sys.argv[1] in (
         '--help-commands', 'egg_info', 'clean', '--version'):
