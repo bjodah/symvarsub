@@ -24,12 +24,12 @@ else:
         CleverExtension(
             name_+'.numtransform.transform_wrapper',
             [],
-            copy_files = ['symvarsub/numtransform/transform_wrapper.pyx'],
-            dist_files = [('symvarsub/numtransform/transform_template.f90', None)],
+            copy_files = ['./symvarsub/numtransform/transform_wrapper.pyx'],
+            dist_files = [('./symvarsub/numtransform/transform_template.f90', None)],
             build_callbacks = [
                 (
                     symvarsub.numtransform._setup_numtransform.prebuild,
-                    ('symvarsub/numtransform/transform_wrapper.pyx',), {}
+                    ('./symvarsub/numtransform/transform_wrapper.pyx',), {}
                 )
             ],
             link_ext=False,
