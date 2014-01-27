@@ -15,14 +15,14 @@ from pycompilation.codeexport import F90_Code, DummyGroup, ArrayifyGroup
 
 
 
-def lambdify(args, expr):
+def lambdify(args, expr, **kwargs):
     """
     Mimics from sympy.utilities.lambdify.lambdify
     but allows to use numpy arrays
     """
     if isinstance(args, sympy.Symbol):
         args = [args]
-    return NumTransformer([expr], args)
+    return NumTransformer([expr], args, **kwargs)
 
 
 class NumTransformer(F90_Code, HasMetaData):
