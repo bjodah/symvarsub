@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import symvarsub
-
 from distutils.core import setup
 
 name_ = 'symvarsub'
@@ -17,7 +15,7 @@ if '--help'in sys.argv[1:] or sys.argv[1] in (
 else:
     from pycompilation.dist import clever_build_ext
     from pycompilation.dist import CleverExtension
-    import symvarsub.numtransform._setup_numtransform
+    from symvarsub.numtransform._setup_numtransform import prebuild
 
     cmdclass_ = {'build_ext': clever_build_ext}
     ext_modules_ = [
@@ -28,7 +26,7 @@ else:
             dist_files = [('./symvarsub/numtransform/transform_template.f90', None)],
             build_callbacks = [
                 (
-                    symvarsub.numtransform._setup_numtransform.prebuild,
+                    prebuild,
                     ('./symvarsub/numtransform/transform_wrapper.pyx',), {}
                 )
             ],
