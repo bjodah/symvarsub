@@ -8,7 +8,7 @@ from distutils.core import setup
 
 name_ = 'symvarsub'
 
-version_ = '0.0.5'
+version_ = '0.0.6'
 
 if '--help'in sys.argv[1:] or sys.argv[1] in (
         '--help-commands', 'egg_info', 'clean', '--version'):
@@ -24,7 +24,7 @@ else:
         CleverExtension(
             name_+'.numtransform.transform_wrapper',
             [],
-            copy_files = ['./symvarsub/numtransform/transform_wrapper.pyx'],
+            build_files = ['./symvarsub/numtransform/transform_wrapper.pyx'],
             dist_files = [('./symvarsub/numtransform/transform_template.f90', None)],
             build_callbacks = [
                 (
@@ -33,6 +33,7 @@ else:
                 )
             ],
             link_ext=False,
+            logger=True,
         )
     ]
 

@@ -9,10 +9,10 @@ from functools import partial
 from collections import defaultdict
 
 import sympy
+from sympy.core.compatibility import iterable
 import numpy as np
 from pycompilation import pyx2obj, FortranCompilerRunner, import_, HasMetaData, FileNotFoundError
 from pycompilation.codeexport import F90_Code, DummyGroup, ArrayifyGroup
-
 
 
 def lambdify(args, expr):
@@ -22,7 +22,9 @@ def lambdify(args, expr):
     """
     if isinstance(args, sympy.Symbol):
         args = [args]
-    return NumTransformer([expr], args)
+    if not isinstance(expr, list) and not isinstance(expr, tuple):
+        expr = [expr]
+    return NumTransformer(expr, args)
 
 
 class NumTransformer(F90_Code, HasMetaData):
@@ -36,7 +38,7 @@ class NumTransformer(F90_Code, HasMetaData):
 
     templates = ['transform_template.f90']
 
-    copy_files = [
+    build_files = [
         'prebuilt/transform_wrapper.o',
         'prebuilt/'+FortranCompilerRunner.metadata_filename, # <- Ensure we compile with same compiler
     ]
@@ -182,10 +184,12 @@ class NumTransformer(F90_Code, HasMetaData):
         dummies = dict(zip(self._robust_inp_symbs, self._robust_inp_dummies))
         idxs = [self._inp.index(symb) for symb in self._robust_inp_symbs]
         # make sure args[i] 1 dimensional: .reshape(len(args[i]))
-        inp = np.vstack([args[i] for i in idxs]).transpose()
+        inp = np.vstack([np.array(args[i], dtype=np.float64) for i in idxs]).transpose()
         ret = self._binary_mod.transform(inp, len(self._exprs))
         if len(self._exprs) == 1 and len(args) == 1:
             if isinstance(args[0], float): return ret[0][0]
+        elif all([not iterable(arg) for arg in args]):
+            return ret[0]
         return ret
 
 

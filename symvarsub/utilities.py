@@ -2,7 +2,7 @@
 
 import sympy
 
-from sympy import Symbol, Integer, Float, Function
+from sympy import Symbol, Integer, Float, Function, Dummy
 from sympy.core.function import UndefinedFunction
 
 from .core import replace_instances
@@ -24,16 +24,19 @@ def MaybeRealFunction(key, args, real=None):
     # except AttributeError:
     #     ori_eval_is_real = None
 
+    # if real:
+    #     setattr(sympy.Function, '_eval_is_real', lambda self_: True)
+    # else:
+    #     setattr(sympy.Function, '_eval_is_real', lambda self_: False)
 
-    # setattr(sympy.Function, '_eval_is_real', lambda self_: real)
-    # print()
     # instance = sympy.Function(key)(*args)
+    # print(instance._eval_is_real())
+    # print(instance.is_real)
 
-    # if ori_eval_is_real:
+    # if ori_eval_is_real != None:
     #     setattr(sympy.Function, '_eval_is_real', ori_eval_is_real)
     # else:
     #     delattr(sympy.Function, '_eval_is_real')
-
     # return instance
 
 
@@ -116,6 +119,24 @@ def dummify_Indexed(expr):
         return dummy
 
     return replace_instances(expr, sympy.Indexed, replacer), dict(dummies)
+
+def dummify_Indexed2(expr):
+    indices_dummies = {}
+    def get_indices_dummy(indices):
+        if indices in indices_dummies:
+            return indices_dummies[indices]
+        dummy = Dummy()
+        indices_dummies[indices] = dummy
+        return dummy
+
+    dummies = {}
+    def replacer(mtch):
+        index_dummy = get_indices_dummy(mtch.indices)
+        dummy = Dummy()
+        dummies[dummy] = mtch
+        return dummy
+
+    return replace_instances(expr, sympy.Indexed, replacer), dummies
 
 
 def get_without_piecewise(expr):
