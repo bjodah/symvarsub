@@ -2,11 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import symvarsub
+
 from distutils.core import setup
 
 name_ = 'symvarsub'
 
-version_ = '0.0.1'
+version_ = '0.0.7'
 
 if '--help'in sys.argv[1:] or sys.argv[1] in (
         '--help-commands', 'egg_info', 'clean', '--version'):
@@ -22,15 +24,16 @@ else:
         CleverExtension(
             name_+'.numtransform.transform_wrapper',
             [],
-            copy_files = ['symvarsub/numtransform/transform_wrapper.pyx'],
-            dist_files = [('symvarsub/numtransform/transform_template.f90', None)],
+            build_files = ['./symvarsub/numtransform/transform_wrapper.pyx'],
+            dist_files = [('./symvarsub/numtransform/transform_template.f90', None)],
             build_callbacks = [
                 (
                     symvarsub.numtransform._setup_numtransform.prebuild,
-                    ('symvarsub/numtransform/transform_wrapper.pyx',), {}
+                    ('./symvarsub/numtransform/transform_wrapper.pyx',), {}
                 )
             ],
             link_ext=False,
+            logger=True,
         )
     ]
 

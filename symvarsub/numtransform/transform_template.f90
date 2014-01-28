@@ -1,3 +1,5 @@
+! ${_warning_in_the_generated_file_not_to_edit}
+
 module transform
     use iso_c_binding, only: c_double, c_int
     implicit none

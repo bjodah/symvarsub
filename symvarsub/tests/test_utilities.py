@@ -6,11 +6,12 @@ from symvarsub.utilities import MaybeRealFunction, reassign_const, get_without_p
 
 def test_MaybeRealFunction():
     x = sympy.Symbol('x')
-    ref_ccode = sympy.ccode(sympy.Function('f')(x))
     f = MaybeRealFunction('f', [x], real=True)
     assert f.is_real
     assert MaybeRealFunction('f', [x], real=True) == f
-    sympy.ccode(f) == ref_ccode
+
+    ref_ccode = sympy.ccode(sympy.Function('f')(x))
+    assert sympy.ccode(f) == ref_ccode
 
     y = sympy.Symbol('y', real=False)
     g = MaybeRealFunction('g', [y], real=False)
@@ -19,7 +20,7 @@ def test_MaybeRealFunction():
     assert MaybeRealFunction('g', [y], real=False) == g
     assert g != f
     assert MaybeRealFunction('f', [x], real=True) == f
-    sympy.ccode(f) == sympy.ccode(sympy.Function('f')(x))
+    assert sympy.ccode(f) == sympy.ccode(sympy.Function('f')(x))
 
 def test_reassign_const():
     x, C1, C2 = sympy.symbols('x C1 C2')
