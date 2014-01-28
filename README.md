@@ -8,7 +8,7 @@ Installation
 E.g. do:
 
     pip install --user --upgrade -r http://raw.github.com/bjodah/symvarsub/master/requirements.txt
-    pip install --user --upgrade http://github.com/bjodah/symvarsub/archive/v0.0.7.tar.gz
+    pip install --user --upgrade http://github.com/bjodah/symvarsub/archive/v0.0.8.tar.gz
 
 (modify to your needs)
 

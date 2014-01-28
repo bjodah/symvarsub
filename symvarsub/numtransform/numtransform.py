@@ -15,25 +15,16 @@ from pycompilation import pyx2obj, FortranCompilerRunner, import_, HasMetaData, 
 from pycompilation.codeexport import F90_Code, DummyGroup, ArrayifyGroup
 
 
-<<<<<<< HEAD
-
 def lambdify(args, expr, **kwargs):
-=======
-def lambdify(args, expr):
->>>>>>> 38768d444f6aabec48664e2fbc4c44dabfd52016
     """
     Mimics from sympy.utilities.lambdify.lambdify
     but allows to use numpy arrays
     """
     if isinstance(args, sympy.Symbol):
         args = [args]
-<<<<<<< HEAD
-    return NumTransformer([expr], args, **kwargs)
-=======
     if not isinstance(expr, list) and not isinstance(expr, tuple):
         expr = [expr]
-    return NumTransformer(expr, args)
->>>>>>> 38768d444f6aabec48664e2fbc4c44dabfd52016
+    return NumTransformer(expr, args, **kwargs)
 
 
 class NumTransformer(F90_Code, HasMetaData):
