@@ -4,7 +4,7 @@ import sympy
 
 from symvarsub.utilities import RealFunction, ImagFunction, reassign_const, get_without_piecewise
 
-def test_MaybeRealFunction():
+def test_RealFunction_and_ImageFunction():
     x = sympy.Symbol('x')
     f = RealFunction('f')(x)
     assert f.is_real

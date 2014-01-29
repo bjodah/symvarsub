@@ -1,8 +1,13 @@
 symvarsub
 =========
-[![Build Status](https://travis-ci.org/bjodah/symvarsub.png?branch=master)](https://travis-ci.org/bjodah/symvarsub)
+[![Build Status](https://travis-ci.org/bjodah/symvarsub.png?branch=master)](
+https://travis-ci.org/bjodah/symvarsub)
 
-symvarsub collects routines useful for performing variable subsitutions in collections of SymPy expressions
+symvarsub collects routines useful for performing variable
+subsitutions in collections of SymPy expressions. 
+
+It provides an alternative to sympy.utilities.lambdify, its main
+benefit is much faster compile times thanks to caching of object file.
 
 Installation
 ------------
