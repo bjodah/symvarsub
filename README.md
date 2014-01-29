@@ -20,7 +20,10 @@ E.g. do:
 
 Related projects
 ----------------
-* [fastinverse](http://github.com/bjodah/fastinverse) generating C code for fast calculation of inverses (table lookup -> polynomial interpolation -> newton refinement)
+* [fastinverse](http://github.com/bjodah/fastinverse) generating C
+  code for fast calculation of inverses (table lookup -> polynomial
+  interpolation -> newton refinement) 
 
 ## License
-Open Soucrce. Released under the very permissive simplified (2-clause) BSD license. See LICENCE.tx for further details.
+Open Source. Released under the very permissive simplified (2-clause)
+BSD license. See LICENCE.txt for further details. 
