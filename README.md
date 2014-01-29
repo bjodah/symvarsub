@@ -1,5 +1,6 @@
 symvarsub
 =========
+[![Build Status](https://travis-ci.org/bjodah/symvarsub.png?branch=master)](https://travis-ci.org/bjodah/symvarsub)
 
 symvarsub collects routines useful for performing variable subsitutions in collections of SymPy expressions
 

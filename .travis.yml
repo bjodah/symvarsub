@@ -4,8 +4,9 @@ python:
 #later: - "3.3"
 # command to install dependencies
 install:
+  - "apt-get install gfortran"
   - "pip install -r requirements.txt"
-  - "python setup.py install"    
+  - "python setup.py install"
 # command to run tests
 script: "py.test ."
 notifications:

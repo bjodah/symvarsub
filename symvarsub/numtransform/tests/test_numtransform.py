@@ -8,7 +8,7 @@ from sympy import exp, Derivative
 import numpy as np
 
 from symvarsub import NumTransformer
-from symvarsub.utilities import MaybeRealFunction
+from symvarsub.utilities import RealFunction
 
 
 
@@ -85,7 +85,7 @@ def test_NumTransformer__complex_argument_names2(tempdir=None, logger=None):
 
 def test_NumTransformer__write_code(tempdir=None, logger=None):
     t = sympy.Symbol('t', real=True)
-    lny0, lny1, lny2, lny3, lny4 = [MaybeRealFunction(s, [t], real=True) for s \
+    lny0, lny1, lny2, lny3, lny4 = [RealFunction(s)(t) for s \
                                     in 'lny0 lny1 lny2 lny3 lny4'.split()]
 
     exprs = [
