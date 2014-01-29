@@ -13,7 +13,6 @@ if '--help'in sys.argv[1:] or sys.argv[1] in (
     cmdclass_ = {}
     ext_modules_ = []
 else:
-    import numpy
     from pycompilation.dist import clever_build_ext
     from pycompilation.dist import CleverExtension
     from symvarsub.numtransform._setup_numtransform import prebuild
@@ -23,7 +22,6 @@ else:
         CleverExtension(
             name_+'.numtransform.transform_wrapper',
             sources=[],
-            include_dirs=[numpy.get_include()],
             build_files = ['./symvarsub/numtransform/transform_wrapper.pyx'],
             dist_files = [('./symvarsub/numtransform/transform_template.f90', None)],
             build_callbacks = [
