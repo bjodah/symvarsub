@@ -7,14 +7,16 @@ from sympy.core.function import UndefinedFunction
 
 from .core import replace_instances
 
-def MaybeRealFunction(key, args, real=None):
 
-    class _Function(UndefinedFunction):
-        @staticmethod
-        def _eval_is_real(self):
-            return real
+class MaybeRealFunction(UndefinedFunction):
 
-    return _Function(key)(*args)
+    def __init__(self, *args, **kwargs):
+        self.real = kwargs.pop('real', True)
+        super(MaybeRealFunction, self).__init__(*args, **kwargs)
+
+    @staticmethod
+    def _eval_is_real(self):
+        return self.real
 
     # if real == None:
     #     return Function(key)(*args)
