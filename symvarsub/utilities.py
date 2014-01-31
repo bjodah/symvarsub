@@ -3,41 +3,23 @@
 import sympy
 
 from sympy import Symbol, Integer, Float, Function, Dummy
-from sympy.core.function import UndefinedFunction
+from sympy.core.core import BasicMeta
+from sympy.core.expr import Expr
+from sympy.core.function import UndefinedFunction, Application, FunctionClass, AppliedUndef
+from sympy.core.cache import cacheit
 
 from .core import replace_instances
 
-def MaybeRealFunction(key, args, real=None):
 
-    class _Function(UndefinedFunction):
-        @staticmethod
-        def _eval_is_real(self):
-            return real
+def RealFunction(*args, **kwargs):
+    instance = Function(*args, **kwargs)
+    instance.is_real = True
+    return instance
 
-    return _Function(key)(*args)
-
-    # if real == None:
-    #     return Function(key)(*args)
-
-    # try:
-    #     ori_eval_is_real = sympy.Function._eval_is_real
-    # except AttributeError:
-    #     ori_eval_is_real = None
-
-    # if real:
-    #     setattr(sympy.Function, '_eval_is_real', lambda self_: True)
-    # else:
-    #     setattr(sympy.Function, '_eval_is_real', lambda self_: False)
-
-    # instance = sympy.Function(key)(*args)
-    # print(instance._eval_is_real())
-    # print(instance.is_real)
-
-    # if ori_eval_is_real != None:
-    #     setattr(sympy.Function, '_eval_is_real', ori_eval_is_real)
-    # else:
-    #     delattr(sympy.Function, '_eval_is_real')
-    # return instance
+def ImagFunction(*args, **kwargs):
+    instance = Function(*args, **kwargs)
+    instance.is_real = False
+    return instance
 
 
 def get_new_symbs(expr, known_symbs):

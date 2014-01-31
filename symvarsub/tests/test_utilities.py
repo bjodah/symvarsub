@@ -2,24 +2,24 @@
 
 import sympy
 
-from symvarsub.utilities import MaybeRealFunction, reassign_const, get_without_piecewise
+from symvarsub.utilities import RealFunction, ImagFunction, reassign_const, get_without_piecewise
 
-def test_MaybeRealFunction():
+def test_RealFunction_and_ImageFunction():
     x = sympy.Symbol('x')
-    f = MaybeRealFunction('f', [x], real=True)
+    f = RealFunction('f')(x)
     assert f.is_real
-    assert MaybeRealFunction('f', [x], real=True) == f
+    assert RealFunction('f')(x) == f
 
     ref_ccode = sympy.ccode(sympy.Function('f')(x))
     assert sympy.ccode(f) == ref_ccode
 
     y = sympy.Symbol('y', real=False)
-    g = MaybeRealFunction('g', [y], real=False)
-    assert not g.is_real
+    g = ImagFunction('g')(y)
+    assert g.is_real == False
     assert f.is_real
-    assert MaybeRealFunction('g', [y], real=False) == g
+    assert ImagFunction('g')(y) == g
     assert g != f
-    assert MaybeRealFunction('f', [x], real=True) == f
+    assert RealFunction('f')(x) == f
     assert sympy.ccode(f) == sympy.ccode(sympy.Function('f')(x))
 
 def test_reassign_const():

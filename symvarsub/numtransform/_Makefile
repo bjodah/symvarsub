@@ -7,7 +7,7 @@ PYTHONLIB=python2.7
 
 CFLAGS = -pthread -fno-strict-aliasing -DNDEBUG -g -fwrapv -O2 -Wall -Wstrict-prototypes -fPIC -I$(SPKG_LOCAL)/include/${PYTHONLIB} -I$(SPKG_LOCAL)/lib/${PYTHONLIB}/site-packages/numpy/core/include
 
-transform_wrapper.so: transform.o transform_wrapper.o
+_transform.so: transform.o _transform.o
 	${F90} -shared -o $@ $^ -l${PYTHONLIB}
 
 clean:
@@ -18,7 +18,7 @@ clean:
 test: transform.f90 _test_transform.f90
 	gfortran -o $@ $^
 
-transform_wrapper.c: transform_wrapper.pyx
+_transform.c: transform_wrapper.pyx
 	cython $<
 
 %.o: %.f
