@@ -11,8 +11,10 @@ from collections import defaultdict
 import sympy
 from sympy.core.compatibility import iterable
 import numpy as np
-from pycompilation import pyx2obj, FortranCompilerRunner, import_, HasMetaData, FileNotFoundError
-from pycompilation.codeexport import F90_Code, DummyGroup, ArrayifyGroup
+from pycompilation import import_module_from_file, FileNotFoundError
+from pycompilation.compilation import FortranCompilerRunner
+from pycompilation.util import HasMetaData
+from pycodeexport.codeexport import F90_Code, DummyGroup, ArrayifyGroup
 
 
 def lambdify(args, expr, **kwargs):
@@ -59,7 +61,7 @@ class NumTransformer(F90_Code, HasMetaData):
         self._inp = inp
 
         self._cached_files = self._cached_files or []
-        self._basedir = os.path.dirname(__file__)
+        self.basedir = os.path.dirname(__file__)
 
         self._robust_exprs, self._robust_inp_symbs, self._robust_inp_dummies = \
             self.robustify(self._exprs, self._inp)

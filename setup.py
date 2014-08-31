@@ -6,20 +6,19 @@ from distutils.core import setup
 
 name_ = 'symvarsub'
 
-version_ = '0.0.9'
+version_ = '0.0.10'
 
 if '--help'in sys.argv[1:] or sys.argv[1] in (
         '--help-commands', 'egg_info', 'clean', '--version'):
     cmdclass_ = {}
     ext_modules_ = []
 else:
-    from pycompilation.dist import clever_build_ext
-    from pycompilation.dist import CleverExtension
+    from pycodeexport import pce_build_ext, PCEExtension
     from symvarsub.numtransform._setup_numtransform import prebuild
 
-    cmdclass_ = {'build_ext': clever_build_ext}
+    cmdclass_ = {'build_ext': pce_build_ext}
     ext_modules_ = [
-        CleverExtension(
+        PCEExtension(
             name_+'.numtransform.transform_wrapper',
             sources=[],
             build_files = ['./symvarsub/numtransform/transform_wrapper.pyx'],
