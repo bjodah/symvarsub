@@ -77,7 +77,7 @@ class NumTransformer(F90_Code, HasMetaData):
             hash_ = self.get_from_metadata_file(self._tempdir, 'hash')
             if hash_ == hash(self):
                 try:
-                    self._binary_mod = import_(self.binary_path)
+                    self._binary_mod = import_module_from_file(self.binary_path)
                 except ImportError:
                     raise ImportError('Failed to import module, try to remove "{}" in "{}"'.format(
                         self.metadata_filename, self._tempdir))
@@ -180,7 +180,7 @@ class NumTransformer(F90_Code, HasMetaData):
         if self._binary_mod.__file__ != self.binary_path:
             # Avoid singleton behaviour. (Python changes binary path
             # inplace without changing id of Python object)
-            self._binary_mod = import_(self.binary_path)
+            self._binary_mod = import_module_from_file(self.binary_path)
         if self._binary_mod.__file__ != self.binary_path:
             raise RuntimeError
         dummies = dict(zip(self._robust_inp_symbs, self._robust_inp_dummies))
