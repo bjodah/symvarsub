@@ -43,9 +43,9 @@ def test_trig():
     d = f(pi)
     prec = 1e-11
     print(d)
-    assert -prec < d[0] + 1 < prec
-    assert -prec < d[1] < prec
+    assert abs(d[0] + 1) < prec
+    assert abs(d[1]) < prec
     d = f(3.14159)
     prec = 1e-5
-    assert -prec < d[0] + 1 < prec
-    assert -prec < d[1] < prec
+    assert abs(d[0] + 1) < prec
+    assert abs(d[1]) < prec
