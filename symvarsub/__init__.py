@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-__version__ = '0.0.13'
 
 from __future__ import (absolute_import, division, print_function)
+
+__version__ = '0.0.13'
 
 
 from .numtransform import NumTransformer, lambdify
