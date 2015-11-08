@@ -17,7 +17,7 @@ if len(sys.argv) > 1 and '--help' not in sys.argv[1:] and sys.argv[1] not in (
     cmdclass_ = {'build_ext': pce_build_ext}
     ext_modules_ = [
         PCEExtension(
-            name_+'.numtransform.transform_wrapper',
+            pkg_name + '.numtransform.transform_wrapper',
             sources=[],
             build_files = ['./symvarsub/numtransform/transform_wrapper.pyx'],
             dist_files = [('./symvarsub/numtransform/transform_template.f90', None)],
