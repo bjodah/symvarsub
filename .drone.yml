@@ -7,6 +7,8 @@ script:
   - if [[ "$DRONE_BRANCH" =~ ^v[0-9]+.[0-9]?* ]]; then export SYMVARSUB_RELEASE_VERSION=$DRONE_BRANCH; echo ${SYMVARSUB_RELEASE_VERSION} | tail -c +2 > __conda_version__.txt; fi
   - pip install -r requirements.txt
   - pip3 install -r requirements.txt
+  - python2.7 setup.py build_ext -i
+  - python3.4 setup.py build_ext -i
   - PYTHONPATH=$(pwd) ./scripts/run_tests.sh --cov symvarsub --cov-report html
   - python2 setup.py sdist
   - pip install dist/*.tar.gz
