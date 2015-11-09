@@ -125,7 +125,7 @@ class NumTransformer(F90_Code, HasMetaData):
                 dummies.append(candidate)
                 return candidate
             else:
-                return make_dummy(candidate.name+'p', not_in)
+                return make_dummy(candidate.name+'p', not_in_any)
 
         # First let's determine the used keys
         used_keys = []
