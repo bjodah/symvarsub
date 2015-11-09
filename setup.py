@@ -89,7 +89,7 @@ setup_kwargs = dict(
     eager_resources=[os.path.join('symvarsub', 'numtransform', path)
                      for path in NumTransformer.build_files],
 )
-print(setup_kwargs)
+
 if __name__ == '__main__':
     try:
         if TAGGED_RELEASE:
