@@ -3,7 +3,8 @@
 
 import os
 import sys
-from distutils.core import setup
+from setuptools import setup
+from symvarsub.numtransform import NumTransformer
 
 pkg_name = 'symvarsub'
 
@@ -15,8 +16,8 @@ if len(sys.argv) > 1 and '--help' not in sys.argv[1:] and sys.argv[1] not in (
     from pycodeexport import pce_build_ext, PCEExtension
     from symvarsub.numtransform._setup_numtransform import prebuild
 
-    cmdclass_ = {'build_ext': pce_build_ext}
-    ext_modules_ = [
+    cmdclass = {'build_ext': pce_build_ext}
+    ext_modules = [
         PCEExtension(
             pkg_name + '.numtransform.transform_wrapper',
             sources=[],
@@ -84,9 +85,11 @@ setup_kwargs = dict(
     license='BSD',
     packages=pkgs + tests,
     ext_modules=ext_modules,
-    cmdclass = cmdclass_
+    cmdclass=cmdclass,
+    eager_resources=[os.path.join('symvarsub', 'numtransform', path)
+                     for path in NumTransformer.build_files],
 )
-
+print(setup_kwargs)
 if __name__ == '__main__':
     try:
         if TAGGED_RELEASE:
