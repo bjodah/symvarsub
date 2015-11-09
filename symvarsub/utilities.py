@@ -2,11 +2,10 @@
 
 import sympy
 
-from sympy import Symbol, Integer, Float, Function, Dummy
-from sympy.core.core import BasicMeta
-from sympy.core.expr import Expr
-from sympy.core.function import UndefinedFunction, Application, FunctionClass, AppliedUndef
-from sympy.core.cache import cacheit
+from sympy import (
+    Function, Dummy,
+    # Symbol, Integer, Float,
+)
 
 from .core import replace_instances
 
@@ -15,6 +14,7 @@ def RealFunction(*args, **kwargs):
     instance = Function(*args, **kwargs)
     instance.is_real = True
     return instance
+
 
 def ImagFunction(*args, **kwargs):
     instance = Function(*args, **kwargs)
@@ -25,7 +25,7 @@ def ImagFunction(*args, **kwargs):
 def get_new_symbs(expr, known_symbs):
     new_symbs = set()
     for atom in expr.atoms():
-        if not atom in known_symbs and not atom.is_Number:
+        if atom not in known_symbs and not atom.is_Number:
             new_symbs.add(atom)
     return new_symbs
 
@@ -33,13 +33,14 @@ def get_new_symbs(expr, known_symbs):
 def reassign_const(expr, dest, known, source='C'):
     """
     e.g.
-    >>> reassing_const(x*C1+C2, 'K', [x], 'C')
-    x*K1+K2
+    >>> x, C1, C2 = sympy.symbols('x C1 C2')
+    >>> reassign_const(x*C1+C2, 'K', [x], 'C')[0]
+    K1*x + K2
     """
     def get_resymb(id_):
         tail = ''
         while sympy.Symbol(dest+id_+tail) in known:
-            tail += 'A' # not pretty but should work..
+            tail += 'A'  # not pretty but should work..
         return sympy.Symbol(dest+id_+tail)
 
     new_symbs = get_new_symbs(expr, known)
@@ -65,7 +66,6 @@ def reassign_const(expr, dest, known, source='C'):
     return expr, reassigned_symbs, new_not_reassigned
 
 
-
 def tokenize(expr):
     if isinstance(expr, sympy.Add):
         return '_add_'.join(map(tokenize, expr.args))
@@ -85,6 +85,7 @@ def tokenize(expr):
 
 def dummify_Indexed(expr):
     indices_dummies = {}
+
     def get_indices_dummy(indices):
         if indices in indices_dummies:
             return indices_dummies[indices]
@@ -93,6 +94,7 @@ def dummify_Indexed(expr):
         return dummy
 
     dummies = []
+
     def replacer(mtch):
         base, indices = mtch.base, mtch.indices
         index_dummy = get_indices_dummy(indices)
@@ -102,8 +104,10 @@ def dummify_Indexed(expr):
 
     return replace_instances(expr, sympy.Indexed, replacer), dict(dummies)
 
+
 def dummify_Indexed2(expr):
     indices_dummies = {}
+
     def get_indices_dummy(indices):
         if indices in indices_dummies:
             return indices_dummies[indices]
@@ -112,8 +116,8 @@ def dummify_Indexed2(expr):
         return dummy
 
     dummies = {}
+
     def replacer(mtch):
-        index_dummy = get_indices_dummy(mtch.indices)
         dummy = Dummy()
         dummies[dummy] = mtch
         return dummy
@@ -121,24 +125,28 @@ def dummify_Indexed2(expr):
     return replace_instances(expr, sympy.Indexed, replacer), dummies
 
 
-def get_without_piecewise(expr):
-    """
-    Example:
-    >>> x, k = sympy.symbols('x k')
-    >>> f = sympy.Function('f')
-    >>> dfdx_expr = x*sympy.exp(-k*x)
-    >>> sol = sympy.dsolve(f(x).diff(x)-dfdx_expr,f(x))
-    >>> print(sol)
-    f(x) == C1 + Piecewise((x**2/2, k**3 == 0), ((-k**2*x - k)*exp(-k*x)/k**3, True))
-    >>> get_without_piecewise(sol.rhs)
-    (C1 + (-k**2*x - k)*exp(-k*x)/k**3, [k**3 == 0])
-    """
-    undefined = []
-    def replacer(mtch):
-        for internal_expr, cond in mtch.args:
-            if cond == True:
-                result = internal_expr
-            else:
-                undefined.append(cond)
-        return result
-    return replace_instances(expr, sympy.Piecewise, replacer), undefined
+# def get_without_piecewise(expr):
+#     """
+#     Example:
+#     >>> x, k = sympy.symbols('x k')
+#     >>> f = sympy.Function('f')
+#     >>> dfdx_expr = x*sympy.exp(-k*x)
+#     >>> sol = sympy.dsolve(f(x).diff(x) - dfdx_expr, f(x))
+#     >>> print(sol)
+#     f(x) == C1 + Piecewise((x**2/2, k**3 == 0), \
+# ((-k**2*x - k)*exp(-k*x)/k**3, True))
+#     >>> wo, undef = get_without_piecewise(sol.rhs)
+#     >>> print(wo)
+#     C1 + (-k**2*x - k)*exp(-k*x)/k**3
+#     """
+#     undefined = []
+
+#     def replacer(mtch):
+#         result = None
+#         for internal_expr, cond in mtch.args:
+#             if cond is True:
+#                 result = internal_expr
+#             else:
+#                 undefined.append(cond)
+#         return result
+#     return replace_instances(expr, sympy.Piecewise, replacer), undefined

@@ -2,7 +2,7 @@
 
 from __future__ import division
 
-from sympy import exp, Derivative, sin, cos, sqrt, symbols, pi
+from sympy import sin, cos, sqrt, symbols, pi
 
 from symvarsub import lambdify
 
@@ -15,9 +15,11 @@ def test_single_arg():
     f = lambdify(x, 2*x)
     assert f(1) == 2
 
+
 def test_list_args():
     f = lambdify([x, y], x + y)
     assert f(1, 2) == 3
+
 
 def test_exponentiation():
     f = lambdify(x, x**2)

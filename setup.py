@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import shutil
 import sys
 from setuptools import setup
 from symvarsub.numtransform import NumTransformer
@@ -21,9 +22,10 @@ if len(sys.argv) > 1 and '--help' not in sys.argv[1:] and sys.argv[1] not in (
         PCEExtension(
             pkg_name + '.numtransform.transform_wrapper',
             sources=[],
-            build_files = ['./symvarsub/numtransform/transform_wrapper.pyx'],
-            dist_files = [('./symvarsub/numtransform/transform_template.f90', None)],
-            build_callbacks = [
+            build_files=['./symvarsub/numtransform/transform_wrapper.pyx'],
+            dist_files=[('./symvarsub/numtransform/transform_template.f90',
+                         None)],
+            build_callbacks=[
                 (
                     prebuild,
                     ('./symvarsub/numtransform/transform_wrapper.pyx',), {}
