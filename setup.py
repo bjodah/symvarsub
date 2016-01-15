@@ -76,6 +76,8 @@ tests = [
 ]
 
 descr = 'Convenience functions for use with sympy.'
+deps = ['pycompilation', 'pycodeexport', 'numpy', 'sympy', 'mako',
+        'cython', 'future']
 setup_kwargs = dict(
     name=pkg_name,
     version=__version__,
@@ -88,6 +90,8 @@ setup_kwargs = dict(
     packages=pkgs + tests,
     ext_modules=ext_modules,
     cmdclass=cmdclass,
+    setup_requires=deps,
+    install_requires=deps,
     eager_resources=[os.path.join('symvarsub', 'numtransform', path)
                      for path in NumTransformer.build_files],
 )
