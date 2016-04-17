@@ -1,3 +1,4 @@
+recursive-include symvarsub *.pyx *.f90
 include AUTHORS
 include CHANGES.rst
 include LICENSE
