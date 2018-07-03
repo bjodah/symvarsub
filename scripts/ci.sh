@@ -5,9 +5,9 @@ if [[ "$CI_BRANCH" =~ ^v[0-9]+.[0-9]?* ]]; then
     echo ${CI_BRANCH} | tail -c +2 > __conda_version__.txt
 fi
 python2 setup.py sdist
-pip install dist/*.tar.gz
-(cd /; python2.7 -m pytest --pyargs $PKG_NAME)
-pip3 install dist/*.tar.gz
+python2 -m pip install dist/*.tar.gz
+(cd /; python2 -m pytest --pyargs $PKG_NAME)
+python3 -m pip install dist/*.tar.gz
 (cd /; python3 -m pytest --pyargs $PKG_NAME)
 PYTHONPATH=$(pwd) ./scripts/run_tests.sh --cov $PKG_NAME --cov-report html
 ./scripts/coverage_badge.py htmlcov/ htmlcov/coverage.svg
