@@ -3,6 +3,8 @@ build:
   commands:
     - python2 -m pip install -r requirements.txt
     - python3 -m pip install -r requirements.txt
+    - python2 setup.py build_ext -i
+    - python3 setup.py build_ext -i
     - ./scripts/ci.sh symvarsub
     - (cd examples/; ipython2 nbconvert --to=html --ExecutePreprocessor.enabled=True --ExecutePreprocessor.timeout=300 *.ipynb)
     - (cd examples/; ../scripts/render_index.sh *.html)
