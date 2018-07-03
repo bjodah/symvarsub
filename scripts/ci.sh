@@ -9,7 +9,6 @@ fi
 # (cd /; python2 -m pytest --pyargs $PKG_NAME)
 # python3 -m pip install dist/*.tar.gz
 # (cd /; python3 -m pytest --pyargs $PKG_NAME)
-PYTHONPATH=$(pwd) PYTHON=python2 ./scripts/run_tests.sh
 PYTHONPATH=$(pwd) PYTHON=python3 ./scripts/run_tests.sh --cov $PKG_NAME --cov-report html
 ./scripts/coverage_badge.py htmlcov/ htmlcov/coverage.svg
 ! grep "DO-NOT-MERGE!" -R . --exclude ci.sh
