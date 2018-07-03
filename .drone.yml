@@ -5,7 +5,6 @@ build:
     - python3 setup.py develop
     - ./scripts/ci.sh symvarsub
     - (cd examples/; ipython3 nbconvert --to=html --ExecutePreprocessor.enabled=True --ExecutePreprocessor.timeout=300 *.ipynb)
-    - (cd examples/; ../scripts/render_index.sh *.html)
     - ./scripts/generate_docs.sh
     - ./scripts/prepare_deploy.sh
 
