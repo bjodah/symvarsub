@@ -5,7 +5,7 @@ Lightning fast binary callbacks using F90 for array expressions
 """
 
 import os
-from functools import partial
+import sysconfig
 from collections import defaultdict
 
 import sympy
@@ -14,7 +14,9 @@ import numpy as np
 from pycompilation import import_module_from_file, FileNotFoundError
 from pycompilation.compilation import FortranCompilerRunner
 from pycompilation.util import HasMetaData
-from pycodeexport.codeexport import F90_Code, DummyGroup, ArrayifyGroup
+from pycodeexport.codeexport import (
+    F90_Code, DummyGroup, ArrayifyGroup
+)
 
 
 def lambdify(args, expr, **kwargs):
@@ -42,7 +44,7 @@ class NumTransformer(F90_Code, HasMetaData):
 
     build_files = [
         'prebuilt/transform_wrapper.o',
-        'prebuilt/'+FortranCompilerRunner.metadata_filename, # <- Ensure we compile with same compiler
+        'prebuilt/'+FortranCompilerRunner.metadata_filename,  # <-same compiler
     ]
 
     source_files = ['transform.f90']
@@ -52,7 +54,7 @@ class NumTransformer(F90_Code, HasMetaData):
         'transform_wrapper.o',
     ]
 
-    so_file = 'transform_wrapper.so'
+    so_file = 'transform_wrapper' + sysconfig.get_config_var('SO')
 
     compile_kwargs = {'options': ['pic', 'warn', 'fast']}
 
@@ -63,8 +65,8 @@ class NumTransformer(F90_Code, HasMetaData):
         self._cached_files = self._cached_files or []
         self.basedir = os.path.dirname(__file__)
 
-        self._robust_exprs, self._robust_inp_symbs, self._robust_inp_dummies = \
-            self.robustify(self._exprs, self._inp)
+        (self._robust_exprs, self._robust_inp_symbs,
+         self._robust_inp_dummies) = self.robustify(self._exprs, self._inp)
 
         super(NumTransformer, self).__init__(**kwargs)
         # Make sure our self._tempdir has not been used
@@ -77,9 +79,11 @@ class NumTransformer(F90_Code, HasMetaData):
             hash_ = self.get_from_metadata_file(self._tempdir, 'hash')
             if hash_ == hash(self):
                 try:
-                    self._binary_mod = import_module_from_file(self.binary_path)
+                    self._binary_mod = import_module_from_file(
+                        self.binary_path)
                 except ImportError:
-                    raise ImportError('Failed to import module, try to remove "{}" in "{}"'.format(
+                    fmt = 'Failed to import module, try removing "{}" in "{}"'
+                    raise ImportError(fmt.format(
                         self.metadata_filename, self._tempdir))
             else:
                 raise ValueError("Hash mismatch (current, old): {}, {}".format(
@@ -87,7 +91,6 @@ class NumTransformer(F90_Code, HasMetaData):
         except FileNotFoundError:
             self._binary_mod = self.compile_and_import_binary()
             self.save_to_metadata_file(self._tempdir, 'hash', hash(self))
-
 
     def __hash__(self):
         """
@@ -100,15 +103,16 @@ class NumTransformer(F90_Code, HasMetaData):
         """
         return hash(tuple(self._exprs)+tuple(self._inp))
 
-
     def robustify(self, exprs, inp):
         dummies = []
+
         def make_dummy(key, not_in_any):
             if isinstance(key, sympy.Function):
                 candidate = sympy.Symbol(key.func.__name__, real=key.is_real)
             elif isinstance(key, sympy.Derivative):
-                candidate = sympy.Symbol('d'+key.args[0].func.__name__+\
-                                         ''.join('d'+x.name for x in key.args[1:]))
+                candidate = sympy.Symbol('d'+key.args[0].func.__name__ +
+                                         ''.join('d'+x.name for x
+                                                 in key.args[1:]))
             elif isinstance(key, sympy.Symbol):
                 candidate = key
             elif isinstance(key, str):
@@ -121,13 +125,16 @@ class NumTransformer(F90_Code, HasMetaData):
                 dummies.append(candidate)
                 return candidate
             else:
-                return make_dummy(candidate.name+'p', not_in)
+                return make_dummy(candidate.name+'p', not_in_any)
 
         # First let's determine the used keys
         used_keys = []
         used_keys_dummies = []
         derivs = defaultdict(dict)
-        any_expr_has = lambda x: any([expr.has(x) for expr in exprs])
+
+        def any_expr_has(x):
+            return any([expr.has(x) for expr in exprs])
+
         for key in filter(any_expr_has, inp):
             used_keys.append(key)
             if isinstance(key, sympy.Symbol):
@@ -157,8 +164,8 @@ class NumTransformer(F90_Code, HasMetaData):
         # Ok, so all Derivative(...) instances in exprs should have
         # been dummyfied - iff user provided all corresponding Derivative(...)
         # as inputs, let's check that now and stop them if they missed any:
-        if any_expr_has(sympy.Derivative): raise ValueError(
-                'Did you forget to provide all derivatives as input?')
+        if any_expr_has(sympy.Derivative):
+            raise ValueError('All derivatives as input?')
 
         # Now we are almost there..
         # But e.g. z(t) has included t into used_keys
@@ -172,7 +179,6 @@ class NumTransformer(F90_Code, HasMetaData):
 
         return exprs, truly_used_keys, truly_used_keys_dummies
 
-
     def __call__(self, *args):
         """
         Give arrays in as arguments in same order as `inp` at init.
@@ -183,17 +189,17 @@ class NumTransformer(F90_Code, HasMetaData):
             self._binary_mod = import_module_from_file(self.binary_path)
         if self._binary_mod.__file__ != self.binary_path:
             raise RuntimeError
-        dummies = dict(zip(self._robust_inp_symbs, self._robust_inp_dummies))
         idxs = [self._inp.index(symb) for symb in self._robust_inp_symbs]
         # make sure args[i] 1 dimensional: .reshape(len(args[i]))
-        inp = np.vstack([np.array(args[i], dtype=np.float64) for i in idxs]).transpose()
+        inp = np.vstack([np.array(args[i], dtype=np.float64)
+                         for i in idxs]).transpose()
         ret = self._binary_mod.transform(inp, len(self._exprs))
         if len(self._exprs) == 1 and len(args) == 1:
-            if isinstance(args[0], float): return ret[0][0]
+            if isinstance(args[0], float):
+                return ret[0][0]
         elif all([not iterable(arg) for arg in args]):
             return ret[0]
         return ret
-
 
     def variables(self):
         dummy_groups = (

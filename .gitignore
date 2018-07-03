@@ -6,3 +6,7 @@ build/
 symvarsub/numtransform/tests/tmp*/
 symvarsub/numtransform/prebuilt/*
 
+dist/
+*.egg-info
+**/.ipynb_checkpoints/
+.egg*

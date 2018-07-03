@@ -1,13 +1,11 @@
 language: python
 python:
   - "2.7"
-#later: - "3.3"
-# command to install dependencies
-install:
-  - "sudo apt-get install gfortran"
+before_install:
+  - "sudo apt-get install -qq gfortran python-numpy cython python-pytest python-argh"
   - "pip install -r requirements.txt"
+install:
   - "python setup.py install"
-# command to run tests
 script: "py.test ."
 notifications:
   email: false
