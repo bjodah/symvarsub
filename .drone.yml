@@ -6,7 +6,7 @@ build:
     - ./scripts/ci.sh symvarsub
     - (cd examples/; ipython3 nbconvert --to=html --ExecutePreprocessor.enabled=True --ExecutePreprocessor.timeout=300 *.ipynb)
     - ./scripts/generate_docs.sh
-    - ./scripts/prepare_deploy.sh
+    - mkdir -p deploy/branches/${CI_BRANCH}; cp examples/*.html deploy/branches/${CI_BRANCH}/
 
 deploy:
 
