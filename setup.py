@@ -12,6 +12,7 @@ pkg_name = 'symvarsub'
 cmdclass = {}
 ext_modules = []
 
+
 def _path_under_setup(*args):
     return os.path.join(os.path.dirname(__file__), *args)
 
